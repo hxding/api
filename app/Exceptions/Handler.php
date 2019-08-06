@@ -8,6 +8,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Exceptions\ApiValidationException;
+use App\Exceptions\SystemValidationException;
+use Illuminate\Http\Response;
 
 class Handler extends ExceptionHandler
 {
@@ -43,8 +46,22 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
-        return parent::render($request, $exception);
+
+        if($e instanceof ApiValidationException){
+            return response()->json([
+                'code'    => $e->getCode() ?: Response::HTTP_UNPROCESSABLE_ENTITY,
+                'message' => json_decode($e->getMessage(), true),
+                'data' => []
+            ]);
+        }elseif ($e instanceof SystemValidationException) {
+            return response()->json([
+                'code'=> $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => $e->message,
+                'data'=> []
+            ]);
+        }
+        return parent::render($request, $e);
     }
 }

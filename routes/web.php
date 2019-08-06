@@ -14,3 +14,10 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['middleware'=> 'api_sign'], function () use ($router){
+
+	$router->post('/create_customer', 'CustomerController@createCustomer');
+
+});
+
