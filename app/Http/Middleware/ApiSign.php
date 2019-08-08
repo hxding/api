@@ -2,13 +2,23 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ApiValidationException;
+use App\Exceptions\SystemValidationException;
 use Closure;
 use App\Models\Product;
+use Illuminate\Contracts\Routing\Registrar;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Validator;
+use App\Http\ResourcePack\Register;
 
 class ApiSign
 {
 
     public $sign;
+
+    public $newSign;
+
     /**
      * Handle an incoming request.
      *
@@ -19,19 +29,40 @@ class ApiSign
     public function handle($request, Closure $next)
     {
 
-        //签名校验数据
+        //验证签名的数据
         $requestData = $request->all();
-        if(empty($requestData['sign']) || empty($requestData['product_id'])){
-            return '';
+        $validator = Validator::make($requestData, [
+            'sign' => 'required',
+            'product_id'=> 'required'
+        ]);
+
+        if($validator->fails()){
+            //抛出异常信息
+            throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        //获取产品的key
         $oProduct = Product::where(['id'=> $requestData['product_id']])->first();
         if(empty($oProduct) || empty($oProduct->key)){
-            return '';
+            throw new SystemValidationException(Response::HTTP_FORBIDDEN, Lang::get("messages.403"));
         }
 
         $this->sign = $requestData['sign'];
+        //生成签名信息
+        $this->newSign = $this->generateSign($requestData, $oProduct->key);
+
+        //获取产品的key
+//        if($this->sign !== $this->newSign){
+//            throw new SystemValidationException(Response::HTTP_FORBIDDEN, Lang::get("messages.403"));
+//        }
+
+        //将产品信息注册到运行主体中
+        Register::set('product', $oProduct);
+        return $next($request);
+    }
+
+
+    public function generateSign($requestData, $key)
+    {
         unset($requestData['sign']);
         ksort($requestData);
 
@@ -39,12 +70,7 @@ class ApiSign
         foreach($requestData as $key => $val){
             $sign_str .= $key . '=' . $val . '&';
         }
-        $sign_str = chop($sign_str, '&');
-        $sign_str .= $oProduct->key;
-        if($this->sign !== md5($sign_str)){
-            return '';
-        }
-
-        return $next($request);
+        $sign_str = trim($sign_str, '&');
+        return md5($sign_str . $key);
     }
 }
