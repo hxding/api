@@ -23,4 +23,37 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='产品表'
 
---
+
+-- 商户表
+CREATE TABLE `merchants` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `platform_id` int(11) NOT NULL COMMENT '平台ID',
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
+  `code` varchar(25) NOT NULL COMMENT '标识',
+  `account` varchar(25) DEFAULT NULL COMMENT '账号',
+  `password` varchar(25) DEFAULT NULL COMMENT '密码',
+  `key` varchar(50) NOT NULL COMMENT 'key',
+  `domain` varchar(50) NOT NULL COMMENT '请求域名',
+  `callback_url` varchar(50) NOT NULL COMMENT '回调域名',
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户表'
+
+-- 存款渠道表
+CREATE TABLE `deposit_channel` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `merchant_id` int(11) NOT NULL COMMENT '商户ID',
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
+  `code` varchar(10) NOT NULL COMMENT '渠道标识',
+  `name` varchar(25) NOT NULL COMMENT '名称',
+  `recommend` tinyint(1) NOT NULL DEFAULT '0' COMMENT '推荐',
+  `min_amount` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '最小限额',
+  `max_amount` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '最大限额',
+  `exchange_rate` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '汇率',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型',
+  `sort` tinyint(1) NOT NULL DEFAULT '0' COMMENT '排序',
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='存款渠道表'
