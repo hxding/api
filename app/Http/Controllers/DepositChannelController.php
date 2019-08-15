@@ -32,8 +32,7 @@ class DepositChannelController extends  Controller
         //过滤客户的分组/俱乐部/信用等级/星级等级
         $depositChannel = $channel->filterRules($customer);
 
-        //对渠道进行排序/成功率/上次10此成功的存款记录/手续费
-
+        //对渠道进行排序/成功率/上次10次成功的存款记录/手续费
         return $this->returnSuccess($depositChannel);
 
     }

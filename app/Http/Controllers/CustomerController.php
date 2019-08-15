@@ -26,7 +26,6 @@ class CustomerController extends Controller
 
         //保存数据
         $createData = $customer->store($request->all());
-        
         if(!$createData){
             throw new SystemValidationException(Response::HTTP_INTERNAL_SERVER_ERROR, Lang::get("messages.500"));
         }

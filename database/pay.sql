@@ -41,7 +41,7 @@ CREATE TABLE `merchants` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户表'
 
 -- 存款渠道表
-CREATE TABLE `deposit_channel` (
+CREATE TABLE `deposit_channels` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `merchant_id` int(11) NOT NULL COMMENT '商户ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\ResourcePack;
+namespace App\Http\Library;
 
 /**
  * 系统全局的注册树

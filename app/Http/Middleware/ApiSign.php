@@ -10,7 +10,7 @@ use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
-use App\Http\ResourcePack\Register;
+use App\Http\Library\Register;
 
 class ApiSign
 {
@@ -43,7 +43,7 @@ class ApiSign
 
         $oProduct = Product::where(['id'=> $requestData['product_id']])->first();
         if(empty($oProduct) || empty($oProduct->key)){
-            throw new SystemValidationException(Response::HTTP_FORBIDDEN, Lang::get("messages.403"));
+            throw new SystemValidationException(Response::HTTP_FORBIDDEN, Lang::get("messages.500"));
         }
 
         $this->sign = $requestData['sign'];
