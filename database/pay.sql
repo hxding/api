@@ -57,3 +57,31 @@ CREATE TABLE `deposit_channel` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='存款渠道表'
+
+--存款表
+CREATE TABLE `deposits` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `product_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `currency_type` varchar(10) NOT NULL,
+  `amount` decimal(11,2) NOT NULL,
+  `real_amount` decimal(11,2) NOT NULL,
+  `order_sn` varchar(35) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `depositor` varchar(15) NOT NULL,
+  `deposit_account` varchar(50) NOT NULL,
+  `deposit_type` varchar(1) NOT NULL,
+  `merchant_order_sn` varchar(35) NOT NULL,
+  `product_order_sn` varchar(35) NOT NULL,
+  `deposit_channel_code` int(11) NOT NULL,
+  `notification_status` tinyint(1) NOT NULL COMMENT '通知游戏状态',
+  `notification_message` varchar(35) NOT NULL COMMENT '游戏回调信息',
+  `notification_time` datetime DEFAULT NULL COMMENT '通知游戏时间',
+  `original_currency_type` varchar(10) NOT NULL COMMENT '原币种类型',
+  `original_currency_amount` decimal(11,2) NOT NULL COMMENT '原币种金额',
+  `original_currency_exchange_rate` decimal(10,0) NOT NULL COMMENT '原币种到现币种到汇率',
+  `merchant_id` int(11) NOT NULL COMMENT '商户ID',
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

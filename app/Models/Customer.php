@@ -25,4 +25,10 @@ class Customer extends Model
         return true;
     }
 
+
+    public function me($productId,  $productUserId)
+    {
+        return self::where(['product_id'=> $productId, 'product_user_id'=> $productUserId])->first();
+    }
+
 }
