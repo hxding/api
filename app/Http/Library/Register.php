@@ -4,7 +4,7 @@
 namespace App\Http\ResourcePack;
 
 /**
- * 系统全局的注册树ß
+ * 系统全局的注册树
  */
 class Register
 {
