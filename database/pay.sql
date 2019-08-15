@@ -61,19 +61,19 @@ CREATE TABLE `deposit_channels` (
 --存款表
 CREATE TABLE `deposits` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `product_id` int(11) NOT NULL,
-  `customer_id` int(11) NOT NULL,
-  `currency_type` varchar(10) NOT NULL,
-  `amount` decimal(11,2) NOT NULL,
-  `real_amount` decimal(11,2) NOT NULL,
-  `order_sn` varchar(35) NOT NULL,
-  `status` tinyint(1) NOT NULL,
-  `depositor` varchar(15) NOT NULL,
-  `deposit_account` varchar(50) NOT NULL,
-  `deposit_type` varchar(1) NOT NULL,
-  `merchant_order_sn` varchar(35) NOT NULL,
-  `product_order_sn` varchar(35) NOT NULL,
-  `deposit_channel_code` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
+  `customer_id` int(11) NOT NULL COMMENT '客户ID',
+  `currency_type` varchar(10) NOT NULL COMMENT '货币类型',
+  `amount` decimal(11,2) NOT NULL COMMENT '金额',
+  `real_amount` decimal(11,2) NOT NULL COMMENT '实际金额',
+  `order_sn` varchar(35) NOT NULL COMMENT '订单号',
+  `status` tinyint(1) NOT NULL COMMENT '状态',
+  `depositor` varchar(15) NOT NULL COMMENT '存款人',
+  `deposit_account` varchar(50) NOT NULL COMMENT '存款账号',
+  `deposit_type` varchar(1) NOT NULL COMMENT '存款类型',
+  `merchant_order_sn` varchar(35) NOT NULL COMMENT '商户订单号',
+  `product_order_sn` varchar(35) NOT NULL COMMENT '产品订单号',
+  `deposit_channel_code` int(11) NOT NULL COMMENT '存款渠道类型',
   `notification_status` tinyint(1) NOT NULL COMMENT '通知游戏状态',
   `notification_message` varchar(35) NOT NULL COMMENT '游戏回调信息',
   `notification_time` datetime DEFAULT NULL COMMENT '通知游戏时间',
@@ -84,4 +84,4 @@ CREATE TABLE `deposits` (
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
