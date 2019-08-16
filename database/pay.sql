@@ -43,6 +43,7 @@ CREATE TABLE `merchants` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户表'
+INSERT INTO `pay`.`merchants` (`id`, `platform_id`, `product_id`, `code`, `account`, `password`, `key`, `domain`, `callback_url`, `updated_at`, `created_at`) VALUES ('1', '1', '1', 'A92', 'adminfromfunding', 'Fz09feaj9alepv', 'a92yui124', 'http://pay.apap8.com', 'sss', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- 存款渠道表
 CREATE TABLE `deposit_channels` (
