@@ -17,5 +17,8 @@ $router->group(['middleware'=> 'api_sign'], function () use ($router){
 
 	$router->get('/deposit_channel', 'DepositChannelController@list');
 
+	$router->post('/paylimit', 'DepositController@paylimit');
+	$router->post('/pay', 'DepositController@pay');
+
 });
 

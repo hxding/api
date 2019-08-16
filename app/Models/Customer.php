@@ -26,7 +26,7 @@ class Customer extends Model
     }
 
 
-    public function me($productId,  $productUserId)
+    public function findOne($productId,  $productUserId)
     {
         return self::where(['product_id'=> $productId, 'product_user_id'=> $productUserId])->first();
     }

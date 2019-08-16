@@ -56,7 +56,7 @@ class ApiSign
 //        }
 
         //将产品信息注册到运行主体中
-        Register::set('product', $oProduct);
+        Register::set(Register::PRODUCT_INFO_KEY, $oProduct);
         return $next($request);
     }
 

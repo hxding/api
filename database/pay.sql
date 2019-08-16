@@ -1,12 +1,16 @@
 -- 客户表
+DROP TABLE IF EXISTS customers;
 CREATE TABLE `customers` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '客户主键',
-  `product_id` int(11) NOT NULL COMMENT '游戏产品ID',
-  `product_user_id` int(11) NOT NULL COMMENT '游戏用户ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) NOT NULL COMMENT '产品ID',
+  `product_user_id` int(11) NOT NULL COMMENT '产品游戏ID',
+  `credit_level` tinyint(1) NOT NULL DEFAULT '0' COMMENT '信用等级',
+  `star_level` tinyint(1) NOT NULL DEFAULT '0' COMMENT '星级等级',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 正常 0 删除',
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='客户表'
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- 产品表
 CREATE TABLE `products` (

@@ -9,7 +9,9 @@ namespace App\Http\Library;
 class Register
 {
 
-    protected static $objects;
+    const PRODUCT_INFO_KEY = 'product';
+
+    public static $objects;
 
     public static function set($alias, $object)
     {

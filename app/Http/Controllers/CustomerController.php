@@ -14,7 +14,7 @@ class CustomerController extends Controller
 
     public function createCustomer(Request $request, Customer $customer)
     {
-        //验证数据
+        //验证请求数据
         $validator = Validator::make($request->all(), [
             'product_id' => 'required',
             'product_user_id'=> 'required'
