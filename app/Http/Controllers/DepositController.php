@@ -25,15 +25,28 @@ class DepositController extends Controller
             default:
                 $payment = new UnknownPay();
                 break;
-         }
-        $payResult = $payment->paylimit($request);
-        return $this->returnSuccess($payResult);
+        }
+        $paylimitResult = $payment->paylimit($request);
+        return $this->returnSuccess($paylimitResult);
     }
 
 
-    public function pay()
+    public function pay(Request $request)
     {
-
+        $payment_code = $request->input('payment_code', 0);
+        switch ($payment_code) {
+            case 1:
+                $payment = new BQPay();
+                break;
+            case 2:
+                $payment = new OnlinePay();
+                break;
+            default:
+                $payment = new UnknownPay();
+                break;
+        }
+        $payResult = $payment->pay($request);
+        return $this->returnSuccess($payResult);
     }
 
 }

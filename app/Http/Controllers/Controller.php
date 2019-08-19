@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Lang;
 
 class Controller extends BaseController
 {
+
+    public $log_separator = ' : '; 
+
     //成功返回信息
     public function returnSuccess($data= [])
     {

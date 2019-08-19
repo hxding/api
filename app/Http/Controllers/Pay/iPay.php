@@ -6,7 +6,7 @@ interface iPay{
 
     public function paylimit($request);
 
-    public function pay();
+    public function pay($request);
 }
 
 
