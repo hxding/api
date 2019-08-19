@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Pay\BQPay;
 use App\Http\Controllers\Pay\OnlinePay;
 use App\Http\Controllers\Pay\UnknownPay;
+use App\Http\Controllers\Pay\iPay;
+
 
 class DepositController extends Controller
 {

@@ -27,7 +27,7 @@ class DepositChannelController extends  Controller
             throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $customer = $customer->me($requestData['product_id'], $requestData['product_user_id']);
+        $customer = $customer->findOne($requestData['product_id'], $requestData['product_user_id']);
 
         //过滤客户的分组/俱乐部/信用等级/星级等级
         $depositChannel = $channel->filterRules($customer);

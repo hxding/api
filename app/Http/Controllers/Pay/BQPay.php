@@ -12,6 +12,7 @@ use Zttp\Zttp;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
 use App\Exceptions\ApiValidationException;
+use Log;
 
 class BQPay extends Controller implements iPay
 {
@@ -47,8 +48,11 @@ class BQPay extends Controller implements iPay
             "loginname"=> $customer->product_user_id,
             "keycode"=> md5($merchant->code . $customer->credit_level . $merchant->key), 
         ];
+
+        Log::info(__METHOD__);
         $paylimitResult = Zttp::asFormParams()->post($merchant->domain . '/BQBankList.do' , $requestData);
-        return json_decode($paylimitResult->getBody()->getContents(), true);
+        Log::info($paylimitResult);
+        return json_decode($paylimitResult, true);
 
     }
 
