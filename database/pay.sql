@@ -10,9 +10,10 @@ CREATE TABLE `customers` (
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+)COMMENT='客户表';
 
 -- 产品表
+DROP TABLE IF EXISTS products;
 CREATE TABLE `products` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '产品ID',
   `name` varchar(15) NOT NULL COMMENT '产品名称',
@@ -25,10 +26,11 @@ CREATE TABLE `products` (
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='产品表'
+)COMMENT='产品表';
 
 
 -- 商户表
+DROP TABLE IF EXISTS merchants;
 CREATE TABLE `merchants` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `platform_id` int(11) NOT NULL COMMENT '平台ID',
@@ -42,28 +44,31 @@ CREATE TABLE `merchants` (
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商户表'
+)COMMENT='商户表';
 INSERT INTO `pay`.`merchants` (`id`, `platform_id`, `product_id`, `code`, `account`, `password`, `key`, `domain`, `callback_url`, `updated_at`, `created_at`) VALUES ('1', '1', '1', 'A92', 'adminfromfunding', 'Fz09feaj9alepv', 'a92yui124', 'http://pay.apap8.com', 'sss', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- 存款渠道表
+DROP TABLE IF EXISTS deposit_channels;
 CREATE TABLE `deposit_channels` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `merchant_id` int(11) NOT NULL COMMENT '商户ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
-  `code` varchar(10) NOT NULL COMMENT '渠道标识',
-  `name` varchar(25) NOT NULL COMMENT '名称',
+  `code` varchar(10)  NOT NULL COMMENT '渠道标识',
+  `name` varchar(25)  NOT NULL COMMENT '名称',
   `recommend` tinyint(1) NOT NULL DEFAULT '0' COMMENT '推荐',
   `min_amount` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '最小限额',
   `max_amount` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '最大限额',
   `exchange_rate` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '汇率',
-  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '类型',
+  `category` varchar(255)  DEFAULT '0' COMMENT '支付类别 0 在线支付 1 手工存款 2 虚拟货币',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '支付货币类型  0 CNY 1 BTC 2 USDT 3 VND',
   `sort` tinyint(1) NOT NULL DEFAULT '0' COMMENT '排序',
   `updated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='存款渠道表'
+)COMMENT='存款渠道表';
 
 --存款表
+DROP TABLE IF EXISTS deposits;
 CREATE TABLE `deposits` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
@@ -92,4 +97,4 @@ CREATE TABLE `deposits` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_order_sn` (`order_sn`) USING HASH COMMENT '订单号唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+)COMMENT='存款表';

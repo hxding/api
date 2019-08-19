@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Customer;
+use Log;
 
 class Deposit extends Model
 {
@@ -12,7 +13,7 @@ class Deposit extends Model
 
    /**
     * 存款类型
-    */	
+    */
    private $deposit_type_map = [
         1 => 0,
 	    2 => 0,
@@ -49,25 +50,27 @@ class Deposit extends Model
    {
    	   $data_time = date('Y-m-d H:i:s');
        $orderData = [
-           'product_id'=> $customer->product_id,
-           'customer_id' => $customer->id,
-           'amount'=> $requestData['amount'],
-           'depositor'=> $requestData['depositor'],
-           'deposit_channel_code'=> $requestData['payment_code'],
-           'order_sn'=> $payData['billno'],
-           'receipt_bank_name'=> $payData['bankname'],
-           'receipt_account'=> $payData['accountnumber'],
-           'receipt_depositor'=> $payData['accountname'],
-           'status'=> $this->status_map['wait'],
-           'deposit_type'=> $this->deposit_type_map[$requestData['payment_code']],
-           'currency_type'=> $this->currency_type_map[$requestData['payment_code']],
-           'merchant_id'=> $merchant->id,
-           'updated_at'=> $data_time,
-           'created_at'=> $data_time
+           'product_id'           => $customer->product_id,
+           'customer_id'          => $customer->id,
+           'amount'               => $requestData['amount'],
+           'depositor'            => $requestData['depositor'],
+           'order_sn'             => $payData['billno'],
+           'receipt_bank_name'    => $payData['bankname'],
+           'receipt_account'      => $payData['accountnumber'],
+           'receipt_depositor'    => $payData['accountname'],
+           'status'               => $this->status_map['wait'],
+           'deposit_type'         => $this->deposit_type_map[$requestData['payment_code']],
+           'currency_type'        => $this->currency_type_map[$requestData['payment_code']],
+           'deposit_channel_code' => $requestData['payment_code'],
+           'merchant_id'          => $merchant->id,
+           'updated_at'           => $data_time,
+           'created_at'           => $data_time
        ];
 
        $model = new Deposit($orderData);
-       if(!$model->save()) return false;
+       if(!$model->save()){
+           //记录报错信息
+       }
        return $orderData;
    }
 }
