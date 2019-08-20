@@ -44,9 +44,9 @@ class BQPay extends Controller implements iPay
             "loginname"=> $customer->product_user_id,
             "keycode"=> md5($merchant->code . $customer->credit_level . $merchant->key), 
         ];
-        Log::info( __METHOD__ . $this->log_separator . $merchant->domain . '/BQBankList.do' . json_encode($requestData));
+        Log::channel('business_log')->info( __METHOD__ . $this->log_separator . $merchant->domain . '/BQBankList.do', $requestData);
         $paylimitResult = Zttp::asFormParams()->post($merchant->domain . '/BQBankList.do' , $requestData);
-        Log::info(__METHOD__ . $this->log_separator . $paylimitResult);
+        Log::channel('business_log')->info(__METHOD__ . $this->log_separator . $paylimitResult);
         return json_decode($paylimitResult, true);
 
     }

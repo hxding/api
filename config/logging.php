@@ -38,7 +38,13 @@ return [
             'driver' => 'stack',
             'channels' => ['daily'],
         ],
-
+        //业务日志
+        'business_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/business.log'),
+            'level' => 'info',
+            'days'=> 1,
+        ],
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/lumen.log'),

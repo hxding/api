@@ -57,10 +57,8 @@ class Deposit extends Model
        ];
        
        try{
-
           $depositModel = new Deposit($orderData);
           $depositModel->save();
-        
        }catch(QueryException $e){
            Log::info(__METHOD__ . $e->getMessage());
            throw new SystemValidationException(Respose::HTTP_UNPROCESSABLE_ENTITY, Lang::get("messages.422"))
