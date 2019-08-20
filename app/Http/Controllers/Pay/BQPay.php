@@ -15,13 +15,11 @@ use Illuminate\Http\Response;
 use App\Exceptions\ApiValidationException;
 use App\Exceptions\SystemValidationException;
 use Log;
+use App\Models\DepositChannel;
 
 class BQPay extends Controller implements iPay
 {
-
-    const PLATFORM_ID = 1; 
-
-    public function paylimit($request)
+    public function paylimit($request, DepositChannel $depositChannel)
     {
         $requestData = $request->all();
         //验证数据
@@ -34,15 +32,11 @@ class BQPay extends Controller implements iPay
             //抛出异常
             throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
         //获取商户信息
-        $merchantModel = new Merchant();
-        $merchant = $merchantModel->findOne(self::PLATFORM_ID, $requestData['product_id']);
-
+        $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
-        $customerModel = new Customer();
-        $customer = $customerModel->findOne($requestData['product_id'], $requestData['product_user_id']);
-      
+        $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
+
         $requestData = [
             "product"=> $merchant->code,
             "grade"=> $customer->credit_level,
@@ -57,7 +51,7 @@ class BQPay extends Controller implements iPay
 
     }
 
-    public function pay($request)
+    public function pay($request,DepositChannel $depositChannel)
     {
         $requestData = $request->all();
         //验证数据
@@ -74,12 +68,9 @@ class BQPay extends Controller implements iPay
             throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         //获取商户信息
-        $merchantModel = new Merchant();
-        $merchant = $merchantModel->findOne(self::PLATFORM_ID, $requestData['product_id']);
-
+        $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
-        $customerModel = new Customer();
-        $customer = $customerModel->findOne($requestData['product_id'], $requestData['product_user_id']);
+        $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
 
         $requestPayData = [
             'product'=> $merchant->code,
@@ -89,7 +80,7 @@ class BQPay extends Controller implements iPay
             'amount'=> $requestData['amount'],
             'bankcode'=> $requestData['bankcode'],
             'depositor'=> $requestData['depositor'],
-            'customerType'=> 1,
+            'customerType'=> Customer::CUSTOMER_TYPE,
             'backurl'=>  $merchant->callback_url,
             'keycode'=> md5($customer->product_user_id . $merchant->code . $requestData['amount'] . $requestData['bankcode'] .  $customer->credit_level . $merchant->key),
         ];
@@ -103,7 +94,7 @@ class BQPay extends Controller implements iPay
         }
         //保存订单信息
         $depositModel = new Deposit();
-        $orderData = $depositModel->createBqOrder($merchant, $customer, $requestData, $payResult['order']);
+        $orderData = $depositModel->createBqOrder($depositChannel, $customer, $requestData, $payResult['order']);
         return $orderData;
     }
 }

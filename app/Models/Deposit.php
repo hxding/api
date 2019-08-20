@@ -5,23 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Customer;
 use Log;
+use App\Exceptions\SystemValidationException;
+use Illuminate\Http\Response;
+use Illuminate\Database\QueryException;
 
 class Deposit extends Model
 {
 
 	protected $fillable = ['product_id', 'customer_id', 'amount', 'depositor', 'deposit_channel_code', 'order_sn', 'receipt_bank_name', 'receipt_account', 'receipt_depositor', 'status', 'deposit_type', 'currency_type', 'merchant_id', 'updated_at', 'created_at'];
-
-   /**
-    * 存款类型
-    */
-   private $deposit_type_map = [
-        1 => 0,
-	    2 => 0,
-	    3 => 1,
-	    4 => 1,
-	    5 => 2,
-	    6 => 2,
-   ];
 
    /**
     * 订单存款状态
@@ -38,15 +29,13 @@ class Deposit extends Model
     * 货币类型（注：下标为存款的唯一标识）
     */
    private $currency_type_map = [
+       0 => 'CNY',
        1 => 'CNY',
-       2 => 'CNY',
-       3 => 'BTC',
-       4 => 'BTC',
-       5 => 'USDT',
-       6 => 'USDT'
+       2 => 'BTC',
+       3 => 'VND'
    ];
 
-   public  function createBqOrder(Merchant $merchant, Customer $customer, $requestData= [], $payData= [])
+   public  function createBqOrder(DepositChannel $depositChannel, Customer $customer, $requestData= [], $payData= [])
    {
    	   $data_time = date('Y-m-d H:i:s');
        $orderData = [
@@ -59,18 +48,24 @@ class Deposit extends Model
            'receipt_account'      => $payData['accountnumber'],
            'receipt_depositor'    => $payData['accountname'],
            'status'               => $this->status_map['wait'],
-           'deposit_type'         => $this->deposit_type_map[$requestData['payment_code']],
-           'currency_type'        => $this->currency_type_map[$requestData['payment_code']],
-           'deposit_channel_code' => $requestData['payment_code'],
-           'merchant_id'          => $merchant->id,
+           'currency_type'        => $this->currency_type_map[$depositChannel->type],
+           'deposit_type'         => $depositChannel->type,
+           'deposit_channel_code' => $depositChannel->code,
+           'merchant_id'          => $depositChannel->merchant_id,
            'updated_at'           => $data_time,
            'created_at'           => $data_time
        ];
+       
+       try{
 
-       $model = new Deposit($orderData);
-       if(!$model->save()){
-           //记录报错信息
+          $depositModel = new Deposit($orderData);
+          $depositModel->save();
+        
+       }catch(QueryException $e){
+           Log::info(__METHOD__ . $e->getMessage());
+           throw new SystemValidationException(Respose::HTTP_UNPROCESSABLE_ENTITY, Lang::get("messages.422"))
        }
+       
        return $orderData;
    }
 }

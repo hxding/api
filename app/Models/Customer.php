@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
 
+    CONST CUSTOMER_TYPE = 1;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,12 +25,6 @@ class Customer extends Model
             if(!$model->save()) return false;
         }
         return true;
-    }
-
-
-    public function findOne($productId,  $productUserId)
-    {
-        return self::where(['product_id'=> $productId, 'product_user_id'=> $productUserId])->first();
     }
 
 }
