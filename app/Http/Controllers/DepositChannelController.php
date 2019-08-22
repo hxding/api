@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class DepositChannelController extends  Controller
 {
 
-    public function list(Request $request, Customer $customer, DepositChannel $channel)
+    public function list(Request $request, DepositChannel $channel)
     {
         //验证数据
         $requestData = $request->all();
@@ -27,7 +27,7 @@ class DepositChannelController extends  Controller
             throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $customer = $customer->findOne($requestData['product_id'], $requestData['product_user_id']);
+        $customer = Customer::where(['product_id' => $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
 
         //过滤客户的分组/俱乐部/信用等级/星级等级
         $depositChannel = $channel->filterRules($customer);

@@ -21,5 +21,7 @@ $router->group(['middleware'=> 'api_sign'], function () use ($router){
 	
 	$router->post('/pay', 'DepositController@pay');
 
+    $router->post('/intech_all_paylimit', 'DepositController@pay');
+
 });
 

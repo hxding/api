@@ -28,7 +28,7 @@ class Deposit extends Model
    /**
     * 货币类型（注：下标为存款的唯一标识）
     */
-   private $currency_type_map = [
+   public $currency_type_map = [
        0 => 'CNY',
        1 => 'CNY',
        2 => 'BTC',

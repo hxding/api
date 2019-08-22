@@ -16,6 +16,7 @@ use App\Exceptions\ApiValidationException;
 use App\Exceptions\SystemValidationException;
 use Log;
 use App\Models\DepositChannel;
+use Illuminate\Support\Facades\Lang;
 
 class BQPay extends Controller implements iPay
 {

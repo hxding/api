@@ -9,6 +9,7 @@ use App\Http\Controllers\Pay\iPay;
 use App\Models\DepositChannel;
 use App\Exceptions\SystemValidationException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Lang;
 
 
 class DepositController extends Controller
@@ -18,15 +19,18 @@ class DepositController extends Controller
     {
         $payment_code = $request->input('payment_code', 0);
         //获取渠道信息
-        $channelInfo = DepositChannel::where(['id'=> $payment_code])->first();
+        $channelInfo = DepositChannel::where(['code'=> $payment_code])->first();
         if(empty($channelInfo)){
-            throw new SystemValidationException(Respose::HTTP_FORBIDDEN, Lang::get("messages.403"));
+            throw new SystemValidationException(Response::HTTP_FORBIDDEN, Lang::get("messages.403"));
         }
         switch ($payment_code) {
             case 1:
                 $payment = new BQPay();
                 break;
             case 2:
+            case 5:
+            case 6:
+            case 15:
                 $payment = new OnlinePay();
                 break;
             default:
@@ -42,7 +46,7 @@ class DepositController extends Controller
     {
         $payment_code = $request->input('payment_code', 0);
         //获取渠道信息
-        $channelInfo = DepositChannel::where(['id'=> $payment_code])->first();
+        $channelInfo = DepositChannel::where(['code'=> $payment_code])->first();
         if(empty($channelInfo)){
             throw new SystemValidationException(Respose::HTTP_FORBIDDEN, Lang::get("messages.403"));
         }
@@ -51,6 +55,9 @@ class DepositController extends Controller
                 $payment = new BQPay();
                 break;
             case 2:
+            case 5:
+            case 6:
+            case 15:
                 $payment = new OnlinePay();
                 break;
             default:
