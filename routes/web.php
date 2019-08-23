@@ -11,6 +11,10 @@
 |
 */
 
+
+/**
+ * 存取款相关接口（与产品）
+ */
 $router->group(['middleware'=> 'api_sign'], function () use ($router){
 
 	$router->post('/create_customer', 'CustomerController@createCustomer');
@@ -21,7 +25,13 @@ $router->group(['middleware'=> 'api_sign'], function () use ($router){
 	
 	$router->post('/pay', 'DepositController@pay');
 
-    $router->post('/intech_all_paylimit', 'DepositController@pay');
+	$router->get('/withdraw_channel', 'WithdrawChannelController@list');
 
 });
+
+/**
+ * 业务相关接口（与上游支付平台）
+ */
+
+
 

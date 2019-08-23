@@ -31,6 +31,7 @@ class ApiSign
 
         //验证签名的数据
         $requestData = $request->all();
+
         $validator = Validator::make($requestData, [
             'sign' => 'required',
             'product_id'=> 'required'
