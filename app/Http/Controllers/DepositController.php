@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Pay\BQPay;
 use App\Http\Controllers\Pay\OnlinePay;
 use App\Http\Controllers\Pay\UnknownPay;
+use App\Http\Controllers\Pay\TPay;
 use App\Http\Controllers\Pay\iPay;
 use App\Models\DepositChannel;
 use App\Exceptions\SystemValidationException;
@@ -33,6 +34,9 @@ class DepositController extends Controller
             case 15:
                 $payment = new OnlinePay();
                 break;
+            case 101:
+                $payment = new TPay();
+                break;
             default:
                 $payment = new UnknownPay();
                 break;
@@ -59,6 +63,9 @@ class DepositController extends Controller
             case 6:
             case 15:
                 $payment = new OnlinePay();
+                break;
+            case 101:
+                $payment = new TPay();
                 break;
             default:
                 $payment = new UnknownPay();

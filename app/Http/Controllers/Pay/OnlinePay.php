@@ -93,18 +93,18 @@ class OnlinePay extends Controller implements iPay
             'ip'=> $_SERVER['REMOTE_ADDR'],
             'keycode'=> md5($customer->product_user_id . self::NEW_ACCOUNT_FLAG . $merchant->code . $requestData['amount'] .  $customer->credit_level . $merchant->key),
         ];
-        dd($requestPayData);
         Log::channel('business_log')->info( __METHOD__ . $this->log_separator . $merchant->domain . '/OnlinePaymentSecond.do' . json_encode($requestPayData));
-        $payResult = Zttp::asFormParams()->post($merchant->domain . '/OnlinePaymentSecond.do' , $requestPayData);
+        //$payResult = Zttp::asFormParams()->post($merchant->domain . '/OnlinePaymentSecond.do' , $requestPayData);
+        $payResult = '{"paycode":"honweiqrcode","amount":"300","billdate":"20190823","urlList":[],"message":"","billno":"A9219082316444472","url":"http://pay.payali66666666.net/OnlinePaymentDispatch.do","status":0}';
         Log::channel('business_log')->info(__METHOD__ . $this->log_separator . $payResult);
         $payResult = json_decode($payResult, true);
-        if($payResult['success'] !== 0){
+        if($payResult['status'] !== 0){
             $notice_message = !empty($payResult['message']) ? $payResult['message'] : Lang::get("messages.500");
             throw new SystemValidationException(Response::HTTP_INTERNAL_SERVER_ERROR, $notice_message);
         }
         //保存订单信息
         $depositModel = new Deposit();
-        $orderData = $depositModel->createBqOrder($depositChannel, $customer, $requestData, $payResult['order']);
+        $orderData = $depositModel->createOnlineOrder($depositChannel, $customer, $requestData, $payResult);
         return $orderData;  
     }
 }
