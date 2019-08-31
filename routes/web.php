@@ -27,6 +27,18 @@ $router->group(['middleware'=> 'api_sign'], function () use ($router){
 
 	$router->get('/withdraw_channel', 'WithdrawChannelController@list');
 
+    $router->get('/bank_list', 'bankCodeController@list');
+    
+    $router->get('/province_list', 'ProvinceController@list');
+
+    $router->get('/province_cities', 'ProvinceController@provinceCities');
+    
+    $router->get('/cities_list', 'CitiesController@list');
+   
+	$router->post('/bind_customer_bank', 'CustomerBankController@bindCustomerBank');
+
+	$router->post('/do_withdraw', 'WithdrawController@doWithdraw');
+
 });
 
 /**

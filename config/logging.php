@@ -42,7 +42,7 @@ return [
         'business_log' => [
             'driver' => 'daily',
             'path' => storage_path('logs/business.log'),
-            'level' => 'info',
+            'level' => 'debug',
             'days'=> 1,
         ],
         'single' => [
