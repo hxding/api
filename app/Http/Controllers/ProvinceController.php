@@ -19,7 +19,7 @@ class ProvinceController extends Controller
         return $this->returnSuccess(Province::all());
 	}
 
-	public function provinceCities(Request $request, Province $province)
+	public function getProvinceCities(Request $request, Province $province)
 	{
         $requestData = $request->all();
 
@@ -35,4 +35,12 @@ class ProvinceController extends Controller
 
         return $this->returnSuccess($citiesLsit);
 	}
+
+	public function getAllArea(Request $request, Province $province)
+	{
+        $areaList = $province->getAllArea();
+        return $this->returnSuccess($areaList);
+	}
+
+
 }

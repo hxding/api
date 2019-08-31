@@ -16,11 +16,12 @@ class Province extends Model
 
     public function getCities($code)
     {
-
-    	$province = self::where(['province_id'=> $code]);
-
-    	dd($province->cities()->get());
-        return self::find(1)->cities()->where(['province_id'=> $code])->first();
+        return Province::with('cities')->where(['province_id'=> $code])->first();
     }
 
+
+    public function getAllArea()
+    {
+    	return Province::with('cities')->get();
+    }
 }

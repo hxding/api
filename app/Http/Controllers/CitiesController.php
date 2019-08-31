@@ -19,22 +19,20 @@ class CitiesController extends Controller
         return $this->returnSuccess(Cities::all());
 	}
 
-
-	public function oneProvinceCities(Request $request, Cities $cities)
+	public function getCitiesCountry(Request $request, Cities $cities)
 	{
         $requestData = $request->all();
-
         $validator = Validator::make($requestData, [
-            'code' => 'required'
+            'code'=> 'required'
         ]);
 
         if($validator->fails()){
-            throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
+        	throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $citiesLsit = $cities->getCities($requestData['code']);
+        $countryLsit = $cities->getCountry($requestData['code']);
 
-        return $this->returnSuccess($citiesLsit);
+        return $this->returnSuccess($countryLsit);
 	}
 
 }

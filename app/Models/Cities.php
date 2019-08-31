@@ -6,19 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 class Cities extends Model
 {
 
-    public function province()
+    public function country()
     {
-        return $this->belongsTo('App\Models\Province', 'province_id' , 'province_id');
+        return $this->hasMany('App\Models\Country', 'city_id' , 'city_id');
     }
 
     /**
      * 获取指定省份的城市
      */
-    public function getCities($code)
+    public function getCountry($code)
     {
-        //app('db')->connection()->enableQueryLog();
-        self::where(['province_id' => $code])->first();
-       // $sql = app('db')->getQueryLog();
-        return ;
+        return Cities::with('country')->where(['city_id'=> $code])->first();
     }
 }
