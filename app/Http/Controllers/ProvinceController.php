@@ -35,12 +35,4 @@ class ProvinceController extends Controller
 
         return $this->returnSuccess($citiesLsit);
 	}
-
-	public function getAllArea(Request $request, Province $province)
-	{
-        $areaList = $province->getAllArea();
-        return $this->returnSuccess($areaList);
-	}
-
-
 }

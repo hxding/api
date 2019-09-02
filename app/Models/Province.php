@@ -18,10 +18,4 @@ class Province extends Model
     {
         return Province::with('cities')->where(['province_id'=> $code])->first();
     }
-
-
-    public function getAllArea()
-    {
-    	return Province::with('cities')->get();
-    }
 }
