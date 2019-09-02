@@ -34,10 +34,10 @@ $router->group(['middleware'=> 'api_sign'], function () use ($router){
     $router->get('/province_cities', 'ProvinceController@getProvinceCities');
     
     $router->get('/cities_country', 'CitiesController@getCitiesCountry');
-
-    $router->get('/get_all_area', 'ProvinceController@getAllArea');
    
-	$router->post('/bind_customer_bank', 'CustomerBankController@bindCustomerBank');
+	$router->post('/customer_bank', 'CustomerController@bindCustomerBank');
+
+	$router->get('/customer_bank', 'CustomerController@getCustomerBank');
 
 	$router->post('/do_withdraw', 'WithdrawController@doWithdraw');
 
