@@ -12,7 +12,7 @@ use Illuminate\Database\QueryException;
 use App\Models\Merchant;
 use App\Http\Library\Helper;
 
-class Deposit extends Model
+class DepositRecord extends Model
 {
      
 	protected $fillable = ['product_id', 'customer_id', 'amount', 'depositor', 'deposit_channel_code', 'order_sn', 'receipt_bank_name', 'receipt_account', 'receipt_depositor', 'status', 'deposit_type', 'currency_type', 'merchant_id', 'updated_at', 'created_at'];
@@ -64,7 +64,7 @@ class Deposit extends Model
        ];
        
        try{
-          $depositModel = new Deposit($orderData);
+          $depositModel = new DepositRecord($orderData);
           $depositModel->save();
        }catch(QueryException $e){
            Log::info(__METHOD__ . $e->getMessage());
@@ -95,7 +95,7 @@ class Deposit extends Model
            'created_at'           => $data_time
        ];
        try{
-          $depositModel = new Deposit($orderData);
+          $depositModel = new DepositRecord($orderData);
           $depositModel->save();
        }catch(QueryException $e){
            Log::channel('business_log')->info(__METHOD__ . json_encode($e->getMessage()));

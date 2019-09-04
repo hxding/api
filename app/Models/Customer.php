@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-
-    CONST CUSTOMER_TYPE = 1;
-
     /**
      * The attributes that are mass assignable.
      *

@@ -8,7 +8,8 @@ use App\Http\Controllers\Pay\iPay;
 use App\Http\Library\Register;
 use App\Models\Customer;
 use App\Models\Merchant;
-use App\Models\Deposit;
+use App\Models\DepositRecord;
+use App\Http\Controllers\Intech\IDeposit;
 use Zttp\Zttp;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
@@ -37,17 +38,8 @@ class BQPay extends Controller implements iPay
         $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
         $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
-
-        $requestData = [
-            "product"=> $merchant->code,
-            "grade"=> $customer->credit_level,
-            "cuslevel"=> $customer->star_level ,
-            "loginname"=> $customer->product_user_id,
-            "keycode"=> md5($merchant->code . $customer->credit_level . $merchant->key), 
-        ];
-        Log::channel('business_log')->info( __METHOD__ . $this->log_separator . $merchant->domain . '/BQBankList.do', $requestData);
-        $paylimitResult = Zttp::asFormParams()->post($merchant->domain . '/BQBankList.do' , $requestData);
-        Log::channel('business_log')->info(__METHOD__ . $this->log_separator . $paylimitResult);
+        $IDeposit = new IDeposit();
+        $paylimitResult = $IDeposit->BQBankList($merchant, $customer);
         return json_decode($paylimitResult, true);
 
     }
@@ -72,29 +64,15 @@ class BQPay extends Controller implements iPay
         $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
         $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
-
-        $requestPayData = [
-            'product'=> $merchant->code,
-            'grade'=> $customer->credit_level,
-            'cuslevel'=> $customer->star_level ,
-            'loginname'=> $customer->product_user_id,
-            'amount'=> $requestData['amount'],
-            'bankcode'=> $requestData['bankcode'],
-            'depositor'=> $requestData['depositor'],
-            'customerType'=> Customer::CUSTOMER_TYPE,
-            'backurl'=>  $merchant->callback_url,
-            'keycode'=> md5($customer->product_user_id . $merchant->code . $requestData['amount'] . $requestData['bankcode'] .  $customer->credit_level . $merchant->key),
-        ];
-        Log::info( __METHOD__ . $this->log_separator . $merchant->domain . '/BQPayment.do' . json_encode($requestPayData));
-        $payResult = Zttp::asFormParams()->post($merchant->domain . '/BQPayment.do' , $requestPayData);
-        Log::info(__METHOD__ . $this->log_separator . $payResult);
+        $IDeposit = new IDeposit();
+        $payResult = $IDeposit->BQPayment($merchant, $customer, $requestData);
         $payResult = json_decode($payResult, true);
         if($payResult['success'] !== 0){
             $notice_message = !empty($payResult['message']) ? $payResult['message'] : Lang::get("messages.500");
             throw new SystemValidationException(Response::HTTP_INTERNAL_SERVER_ERROR, $notice_message);
         }
         //保存订单信息
-        $depositModel = new Deposit();
+        $depositModel = new DepositRecord();
         $orderData = $depositModel->createBqOrder($depositChannel, $customer, $requestData, $payResult['order']);
         return $orderData;
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pay;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Pay\iPay;
+use App\Http\Controllers\Telfa\TDeposit;
 use App\Http\Library\Register;
 use App\Models\Customer;
 use App\Models\Merchant;
@@ -40,16 +41,9 @@ class TPay extends Controller implements iPay
         $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
         $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
-        $requestData = [
-            'productId'=>  $merchant->code,
-            'league'=> $merchant->league_id,
-            'club'=> $merchant->club_id
-        ];
-        Log::channel('business_log')->info( __METHOD__ . $this->log_separator . $merchant->domain . '/online-pay/payment-methods', $requestData);
-        $paylimitResult = Zttp::asFormParams()->get($merchant->domain . '/online-pay/payment-methods' , $requestData);
-        Log::channel('business_log')->info(__METHOD__ . $this->log_separator . $paylimitResult);
+        $TDeposit = new TDeposit();
+        $paylimitResult = $TDeposit->paymentMethods($merchant);
         $paylimitResult = json_decode($paylimitResult, true);
-
         if(empty($paylimitResult['methods']) || !is_array($paylimitResult)){
             throw new SystemValidationException(Response::HTTP_INTERNAL_SERVER_ERROR, Lang::get("messages.500"));
         }

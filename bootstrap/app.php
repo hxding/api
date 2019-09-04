@@ -80,6 +80,10 @@ $app->routeMiddleware([
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
+/**
+ * 加载配置文件
+ */
+$app->configure("map");
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
@@ -90,7 +94,6 @@ $app->routeMiddleware([
 | can respond to, as well as the controllers that may handle them.
 |
 */
-
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {

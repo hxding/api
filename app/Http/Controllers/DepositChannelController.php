@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers;
-
 
 use App\Exceptions\ApiValidationException;
 use App\Models\Customer;

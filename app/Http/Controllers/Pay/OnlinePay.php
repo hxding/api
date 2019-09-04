@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Pay;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Pay\iPay;
+use App\Http\Controllers\Intech\IDeposit;
 use App\Http\Library\Register;
 use App\Models\Customer;
 use App\Models\Merchant;
-use App\Models\Deposit;
+use App\Models\DepositRecord;
 use Zttp\Zttp;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
@@ -20,9 +21,6 @@ use Illuminate\Support\Facades\Lang;
 
 class OnlinePay extends Controller implements iPay
 {
-
-	const NEW_ACCOUNT_FLAG = 0;
-
     public function paylimit($request, DepositChannel $depositChannel)
     {
     	$requestData = $request->all();
@@ -39,19 +37,8 @@ class OnlinePay extends Controller implements iPay
         $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
         $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
-        $requestOnlineData = [
-            'newaccount'=> self::NEW_ACCOUNT_FLAG,
-            'product'=> $merchant->code,
-            'loginname'=> $requestData['product_user_id'],
-            'grade'=> $customer->credit_level,
-            'cuslevel'=> $customer->star_level,
-            'currency'=> DepositChannel::$currency_type_map[$depositChannel->type],
-            'type'=> $requestData['payment_code'],
-            'keycode'=> md5($requestData['product_user_id'] . $merchant->code . self::NEW_ACCOUNT_FLAG . $customer->credit_level . $merchant->key)
-        ];
-        Log::channel('business_log')->info( __METHOD__ . $this->log_separator . $merchant->domain . '/OnlinePaymentFirst.do', $requestOnlineData);
-        $paylimitResult = Zttp::asFormParams()->post($merchant->domain . '/OnlinePaymentFirst.do' , $requestOnlineData);
-        Log::channel('business_log')->info(__METHOD__ . $this->log_separator . $paylimitResult);
+        $IDeposit = new IDeposit();
+        $paylimitResult = $IDeposit->OnlinePaymentFirst($merchant, $customer, $depositChannel, $requestData);
         $paylimitResult = json_decode($paylimitResult, true);
         if(!isset($paylimitResult['status']) || $paylimitResult['status'] !== 0){
             $notice_message = !empty($paylimitResult['message']) ? $paylimitResult['message'] : Lang::get("messages.500");
@@ -79,31 +66,15 @@ class OnlinePay extends Controller implements iPay
         $merchant = Merchant::where(['id'=> $depositChannel->merchant_id])->first();
         //获取客户信息
         $customer = Customer::where(['product_id'=> $requestData['product_id'], 'product_user_id'=> $requestData['product_user_id']])->first();
-
-        $requestPayData = [
-            'product'=> $merchant->code,
-            'newaccount'=> self::NEW_ACCOUNT_FLAG,
-            'grade'=> $customer->credit_level,
-            'cuslevel'=> $customer->star_level ,
-            'loginname'=> $customer->product_user_id,
-            'amount'=> $requestData['amount'],
-            'currency'=> DepositChannel::$currency_type_map[$depositChannel->type],
-            'payid'=> $requestData['payid'],
-            'backurl'=>  $merchant->callback_url,
-            'ip'=> $_SERVER['REMOTE_ADDR'],
-            'keycode'=> md5($customer->product_user_id . self::NEW_ACCOUNT_FLAG . $merchant->code . $requestData['amount'] .  $customer->credit_level . $merchant->key),
-        ];
-        Log::channel('business_log')->info( __METHOD__ . $this->log_separator . $merchant->domain . '/OnlinePaymentSecond.do' . json_encode($requestPayData));
-        //$payResult = Zttp::asFormParams()->post($merchant->domain . '/OnlinePaymentSecond.do' , $requestPayData);
-        $payResult = '{"paycode":"honweiqrcode","amount":"300","billdate":"20190823","urlList":[],"message":"","billno":"A9219082316444472","url":"http://pay.payali66666666.net/OnlinePaymentDispatch.do","status":0}';
-        Log::channel('business_log')->info(__METHOD__ . $this->log_separator . $payResult);
+        $IDeposit = new IDeposit();
+        $payResult = $IDeposit->OnlinePaymentSecond($merchant, $customer, $depositChannel, $requestData);
         $payResult = json_decode($payResult, true);
         if($payResult['status'] !== 0){
             $notice_message = !empty($payResult['message']) ? $payResult['message'] : Lang::get("messages.500");
             throw new SystemValidationException(Response::HTTP_INTERNAL_SERVER_ERROR, $notice_message);
         }
         //保存订单信息
-        $depositModel = new Deposit();
+        $depositModel = new DepositRecord();
         $orderData = $depositModel->createOnlineOrder($depositChannel, $customer, $requestData, $payResult);
         return $orderData;  
     }
