@@ -44,8 +44,27 @@ $router->group(['middleware'=> 'api_sign'], function () use ($router){
 });
 
 /**
- * 业务相关接口（与上游支付平台）
+ * 业务相关接口（与I上游支付平台）
  */
 
+$router->post('/token', 'IBusinessController@generateToken');
+
+$router->group(['middleware'=> 'i_auth'], function () use ($router){
+
+	$router->get('/customer', 'IBusinessController@customer');
+    
+    $router->post('/create_bank_account', 'IBusinessController@createBankAccount');
+    
+    $router->delete('/delete_bank_account', 'IBusinessController@deleteBankAccount');
+
+    $router->get('/deposit_record', 'IBusinessController@depositRecord');
+    
+    $router->get('/withdraw_record', 'IBusinessController@withdrawRecord');
+
+    $router->put('/approve', 'IBusinessController@approve');
+    
+    $router->put('/pay', 'IBusinessController@pay');
+
+});
 
 

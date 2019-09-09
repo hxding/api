@@ -3,6 +3,9 @@
  * 系统统一的状态码的配置
  */
 return [
+    'merchant'=> [
+        'EXP_TIME'=> 180           //接口过期的时间，单位秒  
+    ],
     'customer'=> [                 //用户相关配置
         'CUSTOMER_TYPE'=> 1
     ],

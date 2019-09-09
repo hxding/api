@@ -63,6 +63,7 @@ $app->singleton(
 
 $app->routeMiddleware([
     'api_sign' => App\Http\Middleware\ApiSign::class,
+    'i_auth' => App\Http\Middleware\IAuth::class,
 ]);
 
 /*
