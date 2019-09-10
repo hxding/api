@@ -42,6 +42,12 @@ class DepositRecord extends Model
        3 => 'VND'
    ];
 
+
+   public function customer()
+   {
+       return $this->belongsTo('App\Models\Customer', 'customer_id', 'id');
+   }
+
    public  function createBqOrder(DepositChannel $depositChannel, Customer $customer, $requestData= [], $payData= [])
    {
    	   $data_time = date('Y-m-d H:i:s');
@@ -166,6 +172,43 @@ class DepositRecord extends Model
    {
        $billnoString = substr(date('YmdHis'), 2, 12);
        return $merchant_code . $billnoString . $user_id . $this->deposit_billno_separator . $product_id;
+   }
+
+
+   public function defaultStatusDepositRecord($data = [])
+   {
+      $where = [
+          'status'=> $data['flag'],
+      ];
+      $skip = ($data['pageNum'] - 1) * $data['pageSize'];
+      $depositRecordList =  DepositRecord::with('customer')
+            ->where($where)
+            ->skip($skip)
+            ->take($data['pageSize'])
+            ->get();
+
+      if(empty($depositRecordList)){
+          return false;
+      }
+
+      $iFormatData = [];
+      foreach ($depositRecordList as $key => $value) {
+         $iFormatData[$key]['amount'] = $value['amount'];
+         $iFormatData[$key]['bank_account_name'] = $value['receipt_bank_name'];
+         $iFormatData[$key]['bank_account_no'] = $value['receipt_account'];
+         $iFormatData[$key]['bank_name'] = $value['receipt_depositor'];
+         $iFormatData[$key]['created_date'] = $value['created_at'];
+         $iFormatData[$key]['currency'] = $value['currency_type'];
+         $iFormatData[$key]['deposit_by'] = $value['depositor'];
+         $iFormatData[$key]['login_name'] = $value['customer']['product_user_id'];
+         $iFormatData[$key]['customer_type'] = $value['customer']['customer_type'];
+         $iFormatData[$key]['ip_address'] = $value['customer']['ip'];
+         $iFormatData[$key]['request_id'] = $value['order_sn'];
+         $iFormatData[$key]['customer_level'] = $value['customer']['star_level'];
+         $iFormatData[$key]['deposit_level'] = $value['customer']['credit_level'];
+         $iFormatData[$key]['priority_level'] = $value['customer']['priority_level'];
+      }
+      return $iFormatData;
    }
 
 }

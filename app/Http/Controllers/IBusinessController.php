@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\merchant;
 use App\Models\ReceiptBank;
+use App\Models\DepositRecord;
+use App\Models\WithdrawRecord;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
 use App\Exceptions\ApiValidationException;
@@ -98,19 +100,41 @@ class IBusinessController extends Controller
     /**
      * 读取存款提案
      */
-    public function depositRecord()
+    public function depositRecord(DepositRecord $depositRecord)
     {
         $requestData = json_decode(file_get_contents("php://input"), true);
-        dd($requestData);
+        $validator = Validator::make($requestData, [
+            'pid'=> 'required',
+            'flag'=> 'required',
+            'pageNum'=> 'required',
+            'pageSize'=> 'required',
+        ]);
+        if($validator->fails()){
+            //抛出异常
+            throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        $depositRecord = $depositRecord->defaultStatusDepositRecord($requestData);
+        return $this->returnSuccess($depositRecord);
     }
     
      /**
-     * 读取存款提案
+     * 读取取款提案
      */
-    public function withdrawRecord()
+    public function withdrawRecord(WithdrawRecord $withdrawRecord)
     {
         $requestData = json_decode(file_get_contents("php://input"), true);
-        dd($requestData);
+        $validator = Validator::make($requestData, [
+            'pid'=> 'required',
+            'flag'=> 'required',
+            'pageNum'=> 'required',
+            'pageSize'=> 'required',
+        ]);
+        if($validator->fails()){
+            //抛出异常
+            throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        $withdrawRecord = $withdrawRecord->approveSuccessStatusWithdrawRecord($requestData);
+        return $this->returnSuccess($withdrawRecord);
     }
 
 
