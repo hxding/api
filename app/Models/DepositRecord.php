@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Database\QueryException;
 use App\Models\Merchant;
 use App\Http\Library\Helper;
+use \DB;
 
 class DepositRecord extends Model
 {
@@ -174,6 +175,13 @@ class DepositRecord extends Model
        return $merchant_code . $billnoString . $user_id . $this->deposit_billno_separator . $product_id;
    }
 
+   //生成存款补单订单号
+   public function generateMakeDepositBillno($billno)
+   {
+       $suffix = '_1';
+       return $billno . $suffix;
+   }
+
 
    public function defaultStatusDepositRecord($data = [])
    {
@@ -209,6 +217,60 @@ class DepositRecord extends Model
          $iFormatData[$key]['priority_level'] = $value['customer']['priority_level'];
       }
       return $iFormatData;
+   }
+
+   public function makePayCallback(Customer $customer,DepositChannel $depositChannel, $data = [])
+   {
+      try{
+          DB::beginTransaction();
+          $dataTime = date('Y-m-d H:i:s');
+          $orderData = [
+             'product_id'           => $customer->product_id,
+             'customer_id'          => $customer->id,
+             'depositor'            => $customer->product_user_id,
+             'order_sn'             => $this->generateMakeDepositBillno($data['billno']),
+             'status'               => config('map.deposit_status.SUCCESS'),
+             'currency_type'        => $data['currency'],
+             'amount'               => $data['amount'],
+             'merchant_notification_time'=> date('Y-m-d H:i:s'),
+             'merchant_notification_amount'=> $data['amount'],
+             'merchant_notification_mark'=> $data['remarks'],
+             'deposit_type'         => $depositChannel->type,
+             'deposit_channel_code' => $depositChannel->code,
+             'merchant_id'          => $depositChannel->merchant_id,
+             'updated_at'           => $dataTime,
+             'created_at'           => $dataTime
+          ];
+          DepositRecord::create($orderData);
+          //更新原单为补单状态
+          DepositRecord::where(['order_sn'=> $data['billno']])->update(['status'=> config('map.deposit_status.MAKE_UP')]);
+          DB::commit();
+       }catch(QueryException $e){
+          DB::rollBack();
+          Log::info(__METHOD__ . $e->getMessage());
+          throw new SystemValidationException(Response::HTTP_UNPROCESSABLE_ENTITY, Lang::get("messages.422"));
+       }
+       return true;
+   }
+
+   public function payCallback($data = [])
+   {
+       $where = [
+          'order_sn' => $data['billno'],
+          'status'=> config('map.deposit_status.DEFAULT_WAIT'),
+          'amount'=> $data['amount']
+       ];
+       $update = [
+          'status'=> config('map.deposit_status.SUCCESS'),
+          'merchant_notification_time'=> date('Y-m-d H:i:s'),
+          'merchant_notification_amount'=> $data['amount'],
+          'merchant_notification_mark'=> $data['remarks']
+       ];
+       $depositRecord = DepositRecord::where($where)->update($update);
+       if(empty($depositRecord)){
+           throw new SystemValidationException(Response::HTTP_UNPROCESSABLE_ENTITY, Lang::get("messages.422"));
+       }
+       return $depositRecord;
    }
 
 }

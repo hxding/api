@@ -10,10 +10,34 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2019-09-10 14:39:40
+Date: 2019-09-11 15:18:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for approves
+-- ----------------------------
+DROP TABLE IF EXISTS `approves`;
+CREATE TABLE `approves` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `request_type` tinyint(1) NOT NULL COMMENT '1 存款 2 取款',
+  `merchant_code` varchar(25) NOT NULL COMMENT '商户标识',
+  `request_id` varchar(100) NOT NULL COMMENT '提案ID',
+  `old_flag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 存款 1取款',
+  `new_flag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '2 批准 -3 拒绝',
+  `approve_by` varchar(200) NOT NULL COMMENT '审批人',
+  `user_type` varchar(15) NOT NULL COMMENT 'C 会员 U 客服 Z 资金',
+  `remarks` varchar(250) NOT NULL COMMENT '审批备注',
+  `ip_address` varchar(250) NOT NULL COMMENT 'IP',
+  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of approves
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for bank_codes
@@ -3792,10 +3816,13 @@ CREATE TABLE `deposit_records` (
   `receipt_depositor` varchar(50) NOT NULL DEFAULT '' COMMENT '收款人',
   `deposit_type` varchar(1) NOT NULL COMMENT '存款类型',
   `merchant_order_sn` varchar(35) NOT NULL DEFAULT '' COMMENT '商户订单号',
+  `merchant_notification_time` datetime NOT NULL DEFAULT '2001-01-01 00:00:00' COMMENT '上游商户回调时间',
+  `merchant_notification_amount` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '上游商户回调金额',
+  `merchant_notification_mark` varchar(255) NOT NULL DEFAULT '' COMMENT '上游商户回调备注',
   `product_order_sn` varchar(35) NOT NULL DEFAULT '' COMMENT '产品订单号',
   `deposit_channel_code` int(11) NOT NULL COMMENT '存款渠道类型',
   `notification_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '通知游戏状态',
-  `notification_message` varchar(35) NOT NULL DEFAULT '' COMMENT '游戏回调信息',
+  `notification_message` varchar(35) NOT NULL DEFAULT '' COMMENT '回调游戏信息',
   `notification_time` datetime DEFAULT NULL COMMENT '通知游戏时间',
   `original_currency_type` varchar(10) NOT NULL DEFAULT 'CNY' COMMENT '原币种类型',
   `original_currency_amount` decimal(11,2) NOT NULL DEFAULT '0.00' COMMENT '原币种金额',
@@ -3805,18 +3832,21 @@ CREATE TABLE `deposit_records` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_order_sn` (`order_sn`) USING HASH COMMENT '订单号唯一'
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of deposit_records
 -- ----------------------------
-INSERT INTO `deposit_records` VALUES ('1', '1', '1', 'CNY', '8888.00', '0.00', 'A92EP19081915344743', '0', '订单', '中国农业银行', '6228480148852090676', '周洁莉', '0', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-19 10:00:03', '2019-08-19 10:00:03');
-INSERT INTO `deposit_records` VALUES ('2', '1', '1', 'CNY', '8888.00', '0.00', 'A92EP19081918195935', '0', '订单', '中国农业银行', '6228480148853011572', '李林清', '0', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-19 10:20:02', '2019-08-19 10:20:02');
-INSERT INTO `deposit_records` VALUES ('3', '1', '1', 'CNY', '88.00', '0.00', 'A92EP19082010264165', '0', 'TEST', '中国邮政储蓄银行', '6217995950006529090', '陈卫双', '0', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-20 02:26:42', '2019-08-20 02:26:42');
-INSERT INTO `deposit_records` VALUES ('4', '1', '1', 'CNY', '88.00', '0.00', 'A92EP19082010290172', '0', 'TEST', '中国邮政储蓄银行', '6217995950006529090', '陈卫双', '0', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-20 02:29:02', '2019-08-20 02:29:02');
-INSERT INTO `deposit_records` VALUES ('5', '1', '1', 'CNY', '88.00', '0.00', 'A92EP19082010373894', '0', 'TEST', '中国邮政储蓄银行', '6217995950006529090', '陈卫双', '0', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-20 02:37:38', '2019-08-20 02:37:38');
-INSERT INTO `deposit_records` VALUES ('6', '1', '4', 'CNY', '300.00', '0.00', 'A92EP19090416521993', '0', 'LAV', '中国农业银行', '6228480148849032872', '蒋毅', '0', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-04 08:52:19', '2019-09-04 08:52:19');
-INSERT INTO `deposit_records` VALUES ('7', '1', '4', 'CNY', '300.00', '0.00', 'A9219090417410462', '0', '2067768', '', '', '', '0', '', '', '6', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-04 09:43:29', '2019-09-04 09:43:29');
+INSERT INTO `deposit_records` VALUES ('1', '1', '1', 'CNY', '8888.00', '0.00', 'A92EP19081915344743', '0', '订单', '中国农业银行', '6228480148852090676', '周洁莉', '0', '', '0000-00-00 00:00:00', '0.00', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-19 10:00:03', '2019-08-19 10:00:03');
+INSERT INTO `deposit_records` VALUES ('2', '1', '1', 'CNY', '8888.00', '0.00', 'A92EP19081918195935', '0', '订单', '中国农业银行', '6228480148853011572', '李林清', '0', '', '0000-00-00 00:00:00', '0.00', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-19 10:20:02', '2019-08-19 10:20:02');
+INSERT INTO `deposit_records` VALUES ('3', '1', '1', 'CNY', '88.00', '0.00', 'A92EP19082010264165', '0', 'TEST', '中国邮政储蓄银行', '6217995950006529090', '陈卫双', '0', '', '0000-00-00 00:00:00', '0.00', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-20 02:26:42', '2019-08-20 02:26:42');
+INSERT INTO `deposit_records` VALUES ('4', '1', '1', 'CNY', '88.00', '0.00', 'A92EP19082010290172', '0', 'TEST', '中国邮政储蓄银行', '6217995950006529090', '陈卫双', '0', '', '0000-00-00 00:00:00', '0.00', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-08-20 02:29:02', '2019-08-20 02:29:02');
+INSERT INTO `deposit_records` VALUES ('5', '1', '1', 'CNY', '88.00', '0.00', 'A92EP19082010373894', '4', 'TEST', '中国邮政储蓄银行', '6217995950006529090', '陈卫双', '0', '', '0000-00-00 00:00:00', '0.00', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-11 07:14:30', '2019-08-20 02:37:38');
+INSERT INTO `deposit_records` VALUES ('6', '1', '4', 'CNY', '300.00', '0.00', 'A92EP19090416521993', '0', 'LAV', '中国农业银行', '6228480148849032872', '蒋毅', '0', '', '0000-00-00 00:00:00', '0.00', '', '', '1', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-04 08:52:19', '2019-09-04 08:52:19');
+INSERT INTO `deposit_records` VALUES ('7', '1', '4', 'CNY', '688.00', '0.00', 'A9219091110020496', '2', '2067768', '', '', '', '0', '', '2019-09-11 05:56:04', '688.00', 'N/A', '', '6', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-11 05:56:04', '2019-09-04 09:43:29');
+INSERT INTO `deposit_records` VALUES ('8', '1', '4', 'CNY', '688.00', '0.00', 'A9219091110020496_1', '2', '2067768', '', '', '', '0', '', '2001-01-01 00:00:00', '0.00', '', '', '6', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-11 06:57:36', '2019-09-11 06:57:36');
+INSERT INTO `deposit_records` VALUES ('22', '1', '4', 'CNY', '688.00', '0.00', 'A9219091110077486_1', '2', '2067768', '', '', '', '0', '', '2001-01-01 00:00:00', '0.00', '', '', '6', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-11 07:14:01', '2019-09-11 07:14:01');
+INSERT INTO `deposit_records` VALUES ('24', '1', '4', 'CNY', '688.00', '0.00', 'A92EP19082010373894_1', '2', '2067768', '', '', '', '0', '', '2001-01-01 00:00:00', '0.00', '', '', '6', '0', '', null, 'CNY', '0.00', '0.00', '1', '2019-09-11 07:14:30', '2019-09-11 07:14:30');
 
 -- ----------------------------
 -- Table structure for merchants
@@ -4029,4 +4059,4 @@ CREATE TABLE `withdraw_records` (
 -- ----------------------------
 -- Records of withdraw_records
 -- ----------------------------
-INSERT INTO `withdraw_records` VALUES ('1', '1', '1', '1', '1', 'A921909040803121W', '0', '555.00', '0', '3', null, null, null, 'A2525225145', null, null, null, '2019-09-04 08:03:12', '2019-09-04 08:03:12');
+INSERT INTO `withdraw_records` VALUES ('1', '1', '1', '1', '1', 'A92dz190910152357342629', '1', '555.00', '0', '3', null, null, null, 'A2525225145', null, null, null, '2019-09-04 08:03:12', '2019-09-11 03:09:59');

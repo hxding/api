@@ -20,6 +20,8 @@ return [
     ],
     'deposit_status'=> [
         'DEFAULT_WAIT'=> 0,
+        'SUCCESS'=> 2,
+        'MAKE_UP'=> 4,
     ],
     'withdraw_status'=> [          //取款状态配置
         'DEFAULT_WAIT'=> 0,

@@ -5,7 +5,8 @@ use App\Models\Customer;
 use App\Models\merchant;
 use App\Models\ReceiptBank;
 use App\Models\DepositRecord;
-use App\Models\WithdrawRecord;
+use App\Models\depositChannel;
+use App\Models\Approve;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
 use App\Exceptions\ApiValidationException;
@@ -137,23 +138,71 @@ class IBusinessController extends Controller
         return $this->returnSuccess($withdrawRecord);
     }
 
-
     /**
      * 审核存（人工）取款提案
      */
-    public function approve()
+    public function approve(Approve $approve)
     {
         $requestData = json_decode(file_get_contents("php://input"), true);
-        dd($requestData);
+        $validator = Validator::make($requestData, [
+            'pid'=> 'required',
+            'request_id'=> 'required',
+            'request_type'=> 'required',
+            'old_flag'=> 'required',
+            'new_flag'=> 'required',
+            'approve_by'=> 'required',
+            'user_type'=> 'required',
+            'remarks'=> 'string',
+            'ip_address'=> 'required',
+        ]);
+        if($validator->fails()){
+            //抛出异常
+            throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        switch ($requestData['request_type']) {
+            case '01': //存款
+                $approveRes = $approve->depositApprove($requestData);
+                break;
+            case '02': //取款
+                $approveRes = $approve->withdrawApprove($requestData);
+                break;
+        }
+        return $this->returnSuccess($approveRes);
     }
     
      /**
      * 在线支付存款
      */
-    public function pay()
+    public function pay(DepositRecord $depositRecord)
     {
         $requestData = json_decode(file_get_contents("php://input"), true);
-        dd($requestData);
+        $validator = Validator::make($requestData, [
+            'product_id'=> 'required',
+            'billno'=> 'required',
+            'remarks'=> 'required',
+            'orderType'=> 'required',
+            'amount'=> 'required',
+            'replace_flag'=> 'required',
+            'created_by'=> 'required',
+            'login_name'=> 'required',
+            'currency'=> 'required'
+        ]);
+        if($validator->fails()){
+            throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $depositChannel = DepositChannel::where(['code'=> $requestData['orderType']])->first();
+        $customer = Customer::where(['product_user_id'=> $requestData['login_name']])->first();
+
+        switch ($requestData['replace_flag']) {
+            case '1': //补单相关逻辑
+                $payCallback = $depositRecord->makePayCallback($customer, $depositChannel, $requestData);
+                break;
+           case '0': //在线支付回调
+                $payCallback = $depositRecord->payCallback($requestData);
+                break;
+        }
+        return $this->returnSuccess($payCallback);
     }
 
 }
