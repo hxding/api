@@ -190,19 +190,8 @@ class IBusinessController extends Controller
         if($validator->fails()){
             throw new ApiValidationException($validator, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        $depositChannel = DepositChannel::where(['code'=> $requestData['orderType']])->first();
-        $customer = Customer::where(['product_user_id'=> $requestData['login_name']])->first();
-
-        switch ($requestData['replace_flag']) {
-            case '1': //补单相关逻辑
-                $payCallback = $depositRecord->makePayCallback($customer, $depositChannel, $requestData);
-                break;
-           case '0': //在线支付回调
-                $payCallback = $depositRecord->payCallback($requestData);
-                break;
-        }
-        return $this->returnSuccess($payCallback);
+        dispatch(new DepositNotifyJob($requestData));
+        return $this->returnSuccess();
     }
 
 }
