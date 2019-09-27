@@ -50,16 +50,16 @@ class Handler extends ExceptionHandler
     {
         if($e instanceof ApiValidationException){
             return response()->json([
-                'code'    => $e->getCode() ?: Response::HTTP_UNPROCESSABLE_ENTITY,
+                'code'    => $e->getCode(),
                 'message' => json_decode($e->getMessage(), true),
                 'data' => []
-            ]);
+            ], $e->getCode());
         }elseif ($e instanceof SystemValidationException) {
             return response()->json([
-                'code'=> $e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR,
+                'code'=> $e->getCode(),
                 'message' => $e->message,
                 'data'=> []
-            ]);
+            ], $e->getCode());
         }
         return parent::render($request, $e);
     }
