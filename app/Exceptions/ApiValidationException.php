@@ -53,11 +53,10 @@ class ApiValidationException extends Exception
      */
     public function __construct($validator, $response = null, $errorBag = 'default')
     {
-        parent::__construct($validator->errors());
-
         $this->response = $response;
         $this->errorBag = $errorBag;
         $this->validator = $validator;
+        parent::__construct($validator->errors());
     }
 
     /**

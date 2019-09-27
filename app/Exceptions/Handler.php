@@ -48,7 +48,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-
         if($e instanceof ApiValidationException){
             return response()->json([
                 'code'    => $e->getCode() ?: Response::HTTP_UNPROCESSABLE_ENTITY,

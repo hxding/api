@@ -81,11 +81,13 @@ $app->routeMiddleware([
 // $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(Mpociot\ApiDoc\ApiDocGeneratorServiceProvider::class);
 
 /**
  * 加载配置文件
  */
 $app->configure("map");
+$app->configure('apidoc');
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

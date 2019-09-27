@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Lang;
 class Controller extends BaseController
 {
 
+    use \App\Helpers\ApiResponse;
     public $log_separator = ' : '; 
 
     //成功返回信息

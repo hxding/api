@@ -11,8 +11,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Library\Register;
+use App\Http\Controllers\Controller;
 
-class ApiSign
+class ApiSign extends Controller
 {
 
     public $sign;
@@ -28,7 +29,6 @@ class ApiSign
      */
     public function handle($request, Closure $next)
     {
-
         //验证签名的数据
         $requestData = $request->all();
 

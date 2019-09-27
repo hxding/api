@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class DepositChannelController extends  Controller
 {
-
     public function list(Request $request, DepositChannel $channel)
     {
         //验证数据
@@ -31,7 +30,7 @@ class DepositChannelController extends  Controller
         $depositChannel = $channel->filterRules($customer);
 
         //对渠道进行排序/成功率/上次10次成功的存款记录/手续费
-        return $this->returnSuccess($depositChannel);
+        return $this->success($depositChannel);
 
     }
 }
